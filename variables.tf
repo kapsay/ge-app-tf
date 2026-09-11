@@ -144,3 +144,52 @@ variable "log_retention_days" {
   type        = number
   default     = 90
 }
+
+# ------------------------------------------------------------------------------
+# Jira Data Connector Configuration
+# ------------------------------------------------------------------------------
+
+variable "jira_collection_id" {
+  description = "Unique collection identifier for the Jira Federated Data Connector."
+  type        = string
+  default     = "jira-federated_1782320633397"
+}
+
+variable "jira_collection_display_name" {
+  description = "Display name for the Jira Federated Data Connector collection."
+  type        = string
+  default     = "jira-federated"
+}
+
+variable "jira_site" {
+  description = "Jira instance domain or URL (e.g., 'jwortz.atlassian.net' or 'https://jwortz.atlassian.net'). Overridden by JIRA_SITE in .env if present."
+  type        = string
+  default     = "https://jwortz.atlassian.net"
+}
+
+variable "jira_client" {
+  description = "Jira OAuth 2.0 (3LO) Client ID. Overridden by JIRA_CLIENT in .env if present."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "jira_secret" {
+  description = "Jira OAuth 2.0 (3LO) Client Secret. Overridden by JIRA_SECRET in .env if present."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "jira_cloud_id" {
+  description = "Jira Cloud ID (tenant GUID) or instance ID. Overridden by JIRA_CLOUD_ID in .env if present."
+  type        = string
+  default     = "https://jwortz.atlassian.net/"
+}
+
+variable "jira_refresh_interval" {
+  description = "Refresh interval for the Jira Data Connector data synchronization."
+  type        = string
+  default     = "86400s"
+}
+

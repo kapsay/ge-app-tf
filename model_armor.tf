@@ -69,9 +69,5 @@ resource "google_model_armor_template" "ge_model_armor_template" {
     multi_language_detection {
       enable_multi_language_detection = true
     }
-
-    filter_version_selector {
-      alias = "FILTER_VERSION_ALIAS_LATEST"
-    }
   }
 }

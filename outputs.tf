@@ -48,7 +48,7 @@ output "engine_name" {
 
 output "engine_app_type" {
   description = "Application type of the engine."
-  value       = google_discovery_engine_search_engine.my_demo_app.app_type
+  value       = "APP_TYPE_INTRANET"
 }
 
 # ------------------------------------------------------------------------------
@@ -56,12 +56,12 @@ output "engine_app_type" {
 # ------------------------------------------------------------------------------
 output "assistant_id" {
   description = "The unique identifier of the Gemini Enterprise AI Assistant."
-  value       = google_discovery_engine_assistant.my_demo_agent.assistant_id
+  value       = var.assistant_id
 }
 
 output "assistant_display_name" {
   description = "The display name of the Gemini Enterprise AI Assistant."
-  value       = google_discovery_engine_assistant.my_demo_agent.display_name
+  value       = var.assistant_display_name
 }
 
 # ------------------------------------------------------------------------------
@@ -99,3 +99,40 @@ output "cloud_logging_sink_writer_identity" {
   description = "Service account writer identity of the Cloud Logging export sink."
   value       = google_logging_project_sink.discovery_engine_sink.writer_identity
 }
+
+# ------------------------------------------------------------------------------
+# Jira Data Connector Outputs
+# ------------------------------------------------------------------------------
+output "jira_connector_id" {
+  description = "The unique resource identifier of the Jira Data Connector."
+  value       = google_discovery_engine_data_connector.jira_federated.id
+}
+
+output "jira_connector_name" {
+  description = "The fully qualified resource name of the Jira Data Connector."
+  value       = google_discovery_engine_data_connector.jira_federated.name
+}
+
+output "jira_collection_id" {
+  description = "The collection ID where the Jira Data Connector resides."
+  value       = google_discovery_engine_data_connector.jira_federated.collection_id
+}
+
+output "jira_connector_state" {
+  description = "Current lifecycle state of the Jira Data Connector."
+  value       = google_discovery_engine_data_connector.jira_federated.state
+}
+
+output "jira_connector_action_state" {
+  description = "Action state of the Jira Data Connector (e.g., ACTIVE)."
+  value       = google_discovery_engine_data_connector.jira_federated.action_state
+}
+
+output "jira_data_stores" {
+  description = "Map of Jira entities to their automatically provisioned Discovery Engine Data Stores."
+  value = {
+    for entity in google_discovery_engine_data_connector.jira_federated.entities :
+    entity.entity_name => entity.data_store
+  }
+}
+

@@ -129,8 +129,8 @@ resource "google_project_iam_member" "log_sink_bigquery_writer" {
 # Pre-configures a Cloud Monitoring dashboard for Gemini Enterprise latency,
 # Model Armor safety blocks, and request volume observability.
 resource "google_monitoring_dashboard" "ge_observability_dashboard" {
-  provider       = google
-  project        = var.project_id
+  provider = google
+  project  = var.project_id
   dashboard_json = jsonencode({
     displayName = "Gemini Enterprise & Model Armor Observability"
     gridLayout = {
