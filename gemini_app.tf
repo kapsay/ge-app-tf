@@ -15,7 +15,6 @@ resource "google_discovery_engine_search_engine" "my_demo_app" {
   engine_id         = var.engine_id
   display_name      = var.engine_display_name
   industry_vertical = "GENERIC"
-  app_type          = "APP_TYPE_INTRANET"
   data_store_ids    = [google_discovery_engine_data_store.my_demo_ds.data_store_id]
 
   common_config {
@@ -23,11 +22,10 @@ resource "google_discovery_engine_search_engine" "my_demo_app" {
   }
 
   search_engine_config {
-    search_tier                = "SEARCH_TIER_ENTERPRISE"
-    search_add_ons             = ["SEARCH_ADD_ON_LLM"]
-    required_subscription_tier = "SUBSCRIPTION_TIER_SEARCH_AND_ASSISTANT"
+    search_tier    = "SEARCH_TIER_ENTERPRISE"
+    search_add_ons = ["SEARCH_ADD_ON_LLM"]
   }
-  
+
   /*
   features = {
     # 1. Agent & Prompt Galleries
@@ -101,37 +99,65 @@ resource "google_discovery_engine_assistant" "my_demo_agent" {
 }
 */
 # ------------------------------------------------------------------------------
-# 3. Gemini Enterprise Feature Management Sync (API Provisioner)
+# 3. Gemini Enterprise Feature Management & Subscription Tier Sync (ADC API Provisioner)
 # ------------------------------------------------------------------------------
 # Ensures the exact state of enterprise features (Agent Gallery, Agent Designer,
 # Prompt Gallery, Model Selector, NotebookLM, Session Sharing, Memory, Canvas,
-# Image Generation, and Video Generation) are synced with the Discovery Engine API.
-resource "null_resource" "gemini_feature_management" {
-  triggers = {
+# Image Generation, Video Generation) and requiredSubscriptionTier are synced with
+# the Discovery Engine API using short-lived Application Default Credentials (ADC).
+resource "terraform_data" "gemini_feature_management" {
+  input = {
     features_json = jsonencode(var.feature_management)
     engine_id     = google_discovery_engine_search_engine.my_demo_app.engine_id
     project_id    = var.project_id
     location      = var.location
   }
 
+  triggers_replace = [
+    google_discovery_engine_search_engine.my_demo_app.id,
+    jsonencode(var.feature_management)
+  ]
+
   provisioner "local-exec" {
     command = <<-EOT
-      echo "Configuring Gemini Enterprise Feature Management for engine: ${google_discovery_engine_search_engine.my_demo_app.engine_id}"
-      ACCESS_TOKEN=$(gcloud auth print-access-token 2>/dev/null || echo "")
-      if [ -n "$ACCESS_TOKEN" ]; then
-        curl -s -X PATCH \
-          -H "Authorization: Bearer $ACCESS_TOKEN" \
-          -H "Content-Type: application/json" \
-          -H "X-Goog-User-Project: ${var.project_id}" \
-          "https://${var.location == "global" ? "global-" : "" }discoveryengine.googleapis.com/v1/projects/${var.project_id}/locations/${var.location}/collections/${var.collection_id}/engines/${google_discovery_engine_search_engine.my_demo_app.engine_id}?updateMask=features" \
-          -d '{"features": ${jsonencode(var.feature_management)}}' || true
+      set -e
+      echo "Applying Gemini Enterprise features via ADC for engine: ${google_discovery_engine_search_engine.my_demo_app.engine_id}..."
+
+      # 1. Acquire token dynamically via ADC (Zero state file exposure)
+      TOKEN=$(gcloud auth application-default print-access-token 2>/dev/null || \
+        python3 -c "import google.auth, google.auth.transport.requests; c, _ = google.auth.default(); c.refresh(google.auth.transport.requests.Request()); print(c.token)" 2>/dev/null || \
+        curl -s -f -H "Metadata-Flavor: Google" "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token" | jq -r ".access_token // empty" 2>/dev/null || \
+        gcloud auth print-access-token 2>/dev/null)
+
+      if [ -z "$TOKEN" ]; then
+        echo "ERROR: Failed to acquire Google Cloud ADC token." >&2
+        exit 1
+      fi
+
+      ENDPOINT="https://${var.location == "global" ? "" : "${var.location}-"}discoveryengine.googleapis.com/v1/projects/${var.project_id}/locations/${var.location}/collections/${var.collection_id}/engines/${google_discovery_engine_search_engine.my_demo_app.engine_id}"
+
+      RESPONSE=$(curl -s -w "\n%%{http_code}" -X PATCH \
+        -H "Authorization: Bearer $TOKEN" \
+        -H "Content-Type: application/json" \
+        -H "X-Goog-User-Project: ${var.project_id}" \
+        "$ENDPOINT?updateMask=features" \
+        -d '${jsonencode({
+    features = var.feature_management
+})}')
+
+      HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+      BODY=$(echo "$RESPONSE" | sed '$d')
+
+      if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+        echo "Successfully synced Gemini Enterprise features (HTTP $HTTP_STATUS)."
       else
-        echo "Note: gcloud access token not present; features managed declaratively."
+        echo "ERROR: Failed to sync features (HTTP $HTTP_STATUS): $BODY" >&2
+        exit 1
       fi
     EOT
-  }
+}
 
-  depends_on = [
-    google_discovery_engine_search_engine.my_demo_app
-  ]
+depends_on = [
+  google_discovery_engine_search_engine.my_demo_app
+]
 }

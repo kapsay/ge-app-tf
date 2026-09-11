@@ -53,3 +53,15 @@ log_sink_name             = "ge-discovery-engine-sink"
 bigquery_dataset_id       = "gemini_enterprise_logs"
 bigquery_dataset_location = "US"
 log_retention_days        = 90
+
+# ------------------------------------------------------------------------------
+# Jira Data Connector Configuration
+# ------------------------------------------------------------------------------
+jira_collection_id           = "jira-federated_1782320633397"
+jira_collection_display_name = "jira-federated"
+jira_site                    = "https://your-company.atlassian.net"
+# Optional: Can also be defined in .env as JIRA_CLIENT, JIRA_SECRET, JIRA_CLOUD_ID
+# jira_client                = "your_jira_oauth_client_id"
+# jira_secret                = "your_jira_oauth_client_secret"
+# jira_cloud_id              = "00000000-0000-0000-0000-000000000000"
+

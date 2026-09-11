@@ -1,3 +1,16 @@
 execution.md
 requirements.md
 output.md
+
+# Sensitive environment credentials
+.env
+
+# Terraform local state and files
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
+
+# Local tools
+.antigravitycli/
+

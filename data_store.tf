@@ -11,6 +11,12 @@ resource "google_discovery_engine_data_store" "my_demo_ds" {
   display_name                = var.data_store_display_name
   industry_vertical           = "GENERIC"
   content_config              = var.content_config
-  solution_types              = ["SOLUTION_TYPE_CHAT"]
+  solution_types              = ["SOLUTION_TYPE_CHAT", "SOLUTION_TYPE_SEARCH"]
   create_advanced_site_search = false
+
+  lifecycle {
+    ignore_changes = [
+      advanced_site_search_config,
+    ]
+  }
 }
