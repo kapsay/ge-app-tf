@@ -2,7 +2,7 @@
 # Terraform Variable Values
 # ==============================================================================
 
-project_id        = "ai-work-445217"
+project_id        = "<Your Project ID>"
 
 # Model Armor Configuration
 model_armor_location    = "us-central1"

@@ -2,7 +2,7 @@
 # Terraform Variable Values
 # ==============================================================================
 
-project_id        = "ai-work-445217"
+project_id        = "<Your Project ID>"
 location          = "global"
 collection_id     = "kroger_collection"
 

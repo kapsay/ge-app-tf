@@ -2,8 +2,8 @@
 # Terraform Variable Values
 # ==============================================================================
 
-project_id        = "ai-work-445217"
-project_num       = "545804763087"
+project_id        = "<Your Project ID>"
+project_num       = "<Your Project Number>"
 location          = "global"
 collection_id     = "kroger_collection"
 engine_id         = "kroger_demo_app_tf"
@@ -15,8 +15,8 @@ disable_analytics = false
 company_name      = "The Kroger Co."
 
 data_store_ids = [
-  "ecomm-events_1780862168950",
-  "developer-docs_1784867512211_mcp_data", 
+  "<Your Data Store ID - 1>",
+  "<Your Data Store ID - 2>", 
 ]
 
 features = {
