@@ -13,8 +13,8 @@ The infrastructure is organized into dedicated, modular directories to enable de
 ├── ge_model_armor/       # Step 1: Model Armor security guardrails & safety templates
 ├── ge_connectors_data/   # Step 2a: Discovery Engine Data Store for BigQuery (ecomm_events)
 ├── ge_connectors_mcp/    # Step 2b: Discovery Engine Data Store for MCP / Developer Docs
-├── ge_connectors_jira/   # Step 3: Third-party federated Jira Data Connector with BAP actions
-└── ge_app/               # Step 4: Main Gemini Enterprise Search Engine Application
+├── ge_connectors_jira/   # Step 2c: Third-party federated Jira Data Connector with BAP actions
+└── ge_app/               # Step 3: Main Gemini Enterprise Search Engine Application
 ```
 
 ---
@@ -27,11 +27,10 @@ To satisfy resource dependencies (e.g., Data Stores must exist before being atta
 flowchart TD
     Step1["Step 1: Security & Guardrails<br/><b>ge_model_armor</b>"] --> Step2A["Step 2a: BigQuery Data Store<br/><b>ge_connectors_data</b>"]
     Step1 --> Step2B["Step 2b: MCP Data Store<br/><b>ge_connectors_mcp</b>"]
-    Step2A --> Step3["Step 3: Jira Connector & Actions<br/><b>ge_connectors_jira</b>"]
+    Step1 --> Step2C["Step 2c: Jira Connector & Actions<br/><b>ge_connectors_jira</b>"]
+    Step2A --> Step3["Step 3: Gemini Enterprise Search Engine<br/><b>ge_app</b>"]
     Step2B --> Step3
-    Step2A --> Step4["Step 4: Gemini Enterprise Search Engine<br/><b>ge_app</b>"]
-    Step2B --> Step4
-    Step3 --> Step4
+    Step2C --> Step3
 ```
 
 ### Module Execution Rationale & Dependencies
@@ -41,8 +40,8 @@ flowchart TD
 | **1** | [`ge_model_armor`] | **Security & Guardrails Layer**: Provisions Model Armor templates, prompt injection/jailbreak detection, Responsible AI (RAI) safety filters, malicious URI checks, and SDP/PII inspection. Must be applied first to establish governance policies. |
 | **2a** | [`ge_connectors_data`](NOT READY) | **Data Layer (BigQuery)**: Provisions the Discovery Engine Data Store for BigQuery structured e-commerce data (`ecomm_events`). Must be created before attaching to the search app. |
 | **2b** | [`ge_connectors_mcp`](NOT READY) | **Data Layer (MCP Docs)**: Provisions the Discovery Engine Data Store for Model Context Protocol (MCP) developer documentation (`mcp_data`). Must be created before attaching to the search app. |
-| **3** | [`ge_connectors_jira`] | **Integration Layer (Jira)**: Configures the federated Jira Data Connector with Business Application Platform (BAP) actions for issue management, comments, attachments, and status tracking. |
-| **4** | [`ge_app`] | **Application Layer**: Provisions the Gemini Enterprise Search Engine app (`google_discovery_engine_search_engine`), links the Data Stores provisioned in Step 2, and enables enterprise platform features. |
+| **2c** | [`ge_connectors_jira`] | **Integration Layer (Jira)**: Configures the federated Jira Data Connector with Business Application Platform (BAP) actions for issue management, comments, attachments, and status tracking. |
+| **3** | [`ge_app`] | **Application Layer**: Provisions the Gemini Enterprise Search Engine app (`google_discovery_engine_search_engine`), links the Data Stores provisioned in Step 2, and enables enterprise platform features. |
 
 ---
 
