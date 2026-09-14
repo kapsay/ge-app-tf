@@ -11,8 +11,8 @@ The infrastructure is organized into dedicated, modular directories to enable de
 ```
 .
 ├── ge_model_armor/       # Model Armor security guardrails & safety templates
-├── ge_connectors_data/   # Discovery Engine Data Store for BigQuery (ecomm_events)
-├── ge_connectors_mcp/    # Discovery Engine Data Store for MCP / developer docs
+├── ge_connectors_data/   # Discovery Engine Data Store for BigQuery <<<<<<<<-------- NOT READY
+├── ge_connectors_mcp/    # Discovery Engine Data Store for MCP / developer docs <<<<<<<<-------- NOT READY
 ├── ge_connectors_jira/   # Third-party federated Jira Data Connector with BAP actions
 └── ge_app/               # Main Gemini Enterprise Search Engine application
 ```
